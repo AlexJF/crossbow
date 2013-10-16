@@ -364,6 +364,8 @@ sub parseFastq($$) {
 	$name = <$fh>;
 	return unless defined($name);
 	chomp($name);
+	# Remove @ from the read name since a read name is a line starting with @
+	$name = substr $name, 1;
 	$seq = <$fh>;
 	unless(defined($seq))   { $name = undef; return; }
 	chomp($seq);

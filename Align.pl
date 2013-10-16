@@ -333,6 +333,12 @@ if($test) {
 	%rawQualCnts = ();
 }
 
+sub processReadName($) {
+	my $namePart = shift;
+	$namePart =~ /;RN:(\S+)/;
+	return $1;
+}
+
 # Shunt all of the input to a file
 my %lens = ();
 my $first = 1;
@@ -390,9 +396,10 @@ while(<STDIN>) {
 		$nlen2 = min($truncate, $len2) if $truncate > 0;
 		$truncated++ if ($nlen2 < $len2);
 		my ($nm, $s1, $q1, $s2, $q2) = (@altok);
+		$nm = processReadName($nm);
 		($q1, $q2) = (processQuals($q1), processQuals($q2));
 		$pass++; $pairedPass++;
-		print OUT "r\t".
+		print OUT "$nm\t".
 			substr($s1, 0, $nlen1)."\t".
 			substr($q1, 0, $nlen1)."\t".
 			substr($s2, 0, $nlen2)."\t".
@@ -400,8 +407,9 @@ while(<STDIN>) {
 	} else {
 		$pass++; $unpairedPass++;
 		my ($nm, $s1, $q1) = (@altok);
+		$nm = processReadName($nm);
 		$q1 = processQuals($q1);
-		print OUT "r\t".
+		print OUT "$nm\t".
 			substr($s1, 0, $nlen1)."\t".
 			substr($q1, 0, $nlen1)."\n";
 	}
